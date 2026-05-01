@@ -1,160 +1,220 @@
-import Button from "../component/UI/Button";
-import Collapse from "../component/UI/Collapse";
-
 export default function Competition() {
-  const competitions = [
+  const faqs = [
     {
-      title: "Poster Design Competition",
-      desc: "Poster Design Competition ini adalah kompetisi untuk menciptakan suatu karya dalam bentuk poster digital yang komunikatif dan inspiratif.",
-      image:
-        "https://www.invofest-harkatnegeri.com/assets/competition-card/software_dev.png",
-    },
-    {
-      title: "UI/UX Design Competition",
-      desc: "UI/UX Design Competition ini adalah kompetisi untuk menciptakan dan merancang inovasi sebuah produk digital.",
-      image:
-        "https://www.invofest-harkatnegeri.com/assets/competition-card/ui_ux.png",
-    },
-    {
-      title: "Web Design Competition",
-      desc: "Web Design Competition ini adalah kompetisi untuk menciptakan suatu perangkat lunak berbasis website yang menarik dan responsif.",
-      image:
-        "https://www.invofest-harkatnegeri.com/assets/competition-card/web_design.png",
-    },
-  ];
-
-  const collapseItems = [
-    {
-      title: "Apa itu Infofest?",
+      title: "Apa itu INVOFEST?",
       description:
-        "Invofest (Informatics Vocational Festival) adalah festival tahunan yang bertujuan untuk menginspirasi dan memberdayakan generasi muda Indonesia dalam menghadapi era digital. Dengan mengusung tema 'Beyond Limits, Beyond Intelligence: Innovate for a Smarter Tomorrow.'",
+        "Invofest (Informatics Vocational Festival) adalah festival tahunan yang diakan oleh program studi sarjana terapan teknik informatika Universitas Harkat Negeri, yang bertujuan untuk menginspirasi dan memberdayakan generasi muda Indonesia dalam menghadapi era digital.",
     },
     {
-      title: "Kapan dan dimana Invofest diselenggarakan?",
+      title: "Bagaimana saya mengetahui pemenang kompetisi?",
       description:
-        "INVOFEST diselenggarakan mulai tanggal 21 Oktober 2025 sampai dengan tanggal 27 November 2025. Untuk acara workshop, seminar, talkshow diadakan secara Offline di kampus 1 Universitas Harkat Negeri dan kompetisi diadakan secara Online",
+        "Pemenang akan diinformasikan melalui media sosial instagram dari invofest @invofest_harkatnegeri.",
     },
     {
-      title: "Apakah ada biaya pendaftaran Invofest?",
+      title: "Kapan dan dimana INVOFEST dilaksanakan?",
       description:
-        "Semua kegiatan dipastikan berbayar ya teman-teman.",
+        "INVOFEST diselenggarakan mulai tanggal 21 Oktober 2025 sampai dengan tanggal 27 November 2025. Untuk acara workshop, seminar, talkshow diadakan secara Offline di kampus 1 Universitas Harkat Negeri dan kompetisi diadakan secara Online.",
+    },
+    {
+      title: "Apa yang didapat pemenang dalam kompetisi?",
+      description:
+        "Pemenang kompetisi akan mendapatkan hadiah trophy, uang pembinaan, dan e-sertifikat.",
+    },
+    {
+      title: "Apakah ada biaya pendaftaran di INVOFEST?",
+      description: "Semua kegiatan dipastikan berbayar ya teman-teman.",
+    },
+    {
+      title: "Bagaimana cara mendaftar event?",
+      description:
+        "Buka https://www.invofest-harkatnegeri.com lalu pergi ke halaman event yang anda ingin ikuti atau scroll kebagian bawah halaman beranda dengan klik mendaftar pada salah satu eventnya, jika sudah maka diarahkan ke halaman detail event dan klik tombol 'Registrasi' maka akan diarahkan ke google form pengisian pendaftaran event yang diikuti.",
     },
   ];
 
   return (
-    <div className="bg-gray-50">
-
-      {/* 🔥 HERO */}
-      <section className="max-w-6xl mx-auto px-6 py-20 flex flex-col md:flex-row items-center gap-10">
-        
-        <div className="flex-1">
-          <h1 className="text-4xl md:text-5xl font-bold text-red-900 mb-4">
-            IT Competition
-          </h1>
-
-          <h2 className="text-xl md:text-2xl text-red-800 mb-6">
-            "From Creation to Innovation"
-          </h2>
-
+    <div className="min-h-screen bg-white font-sans">
+      {/* Hero Section */}
+      <section className="flex flex-col md:flex-row items-center justify-between px-16 py-20 max-w-6xl mx-auto">
+        {/* Left Content */}
+        <div className="max-w-lg">
+          <h1 className="text-5xl font-bold text-[#7B1D3F] mb-3">IT Competition</h1>
+          <p className="text-xl text-gray-700 italic mb-5">"From Creation to Innovation"</p>
           <p className="text-gray-600 leading-relaxed mb-8">
             Kompetisi dalam INVOFEST ini mengusung tema{" "}
-            <span className="font-semibold">"From Creation to Innovation"</span>
-            , yang bertujuan mengajak generasi muda untuk mengembangkan
-            inovasi dan kreativitas guna membentuk kelompok yang memiliki
-            potensi luar biasa.
+            <strong>"From Creation to Innovation"</strong>, Tema ini bertujuan mengajak
+            generasi muda untuk mengembangkan inovasi dan kreativitas guna membentuk
+            kelompok yang memiliki potensi luar biasa, yang mampu mewujudkan masa depan
+            yang berkelanjutan.
           </p>
-
           <div className="flex gap-4">
-            <Button label="INFO SELENGKAPNYA" variant="primary" />
-            <Button label="HUBUNGI PANITIA" variant="outline" />
+            <button className="bg-[#7B1D3F] text-white text-sm font-semibold px-6 py-3 rounded hover:bg-[#5a1530] transition-colors duration-200">
+              INFO SELENGKAPNYA
+            </button>
+            <button
+              className="border-2 border-[#7B1D3F] text-[#7B1D3F] text-sm font-semibold px-6 py-3 rounded transition-all duration-200"
+              style={{ transition: "background-color 0.2s, color 0.2s" }}
+              onMouseEnter={(e) => {
+                const btn = e.currentTarget;
+                btn.style.backgroundColor = "#7B1D3F";
+                btn.style.color = "#ffffff";
+              }}
+              onMouseLeave={(e) => {
+                const btn = e.currentTarget;
+                btn.style.backgroundColor = "transparent";
+                btn.style.color = "#7B1D3F";
+              }}
+            >
+              HUBUNGI PANITIA
+            </button>
           </div>
         </div>
 
-        <div className="flex-1 flex justify-center">
+        {/* Right Mascot */}
+        <div className="mt-10 md:mt-0 flex-shrink-0">
           <img
-            src="https://www.invofest-harkatnegeri.com/assets/Maskot-Hero.png"
-            alt="maskot"
-            className="w-72 md:w-96"
+            src="https://www.invofest-harkatnegeri.com/assets/Maskot-Lomba.png"
+            alt="INVOFEST Mascot"
+            className="w-80 h-80 object-contain drop-shadow-xl"
           />
         </div>
       </section>
 
-      {/* 🔥 DESKRIPSI */}
-      <section className="py-20 px-6 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold text-red-900 mb-4">
+      {/* Competition Description Section */}
+      <section className="bg-[#fce8ef] py-16 px-8 text-center">
+        <h2 className="text-4xl font-bold text-[#7B1D3F] mb-6 tracking-wide">
           DESKRIPSI KOMPETISI
         </h2>
-
-        <p className="max-w-3xl mx-auto text-gray-800 leading-relaxed">
-          Kompetisi dalam kegiatan{" "}
-          <strong>INVOFEST (Informatics Vocational Festival)</strong> terdiri
-          dari berbagai kategori seperti Poster Design, UI/UX Design, dan Web
-          Design Competition. Dengan tema{" "}
-          <strong>“From Creation to Innovation”</strong>, Tema ini bertujuan mengajak generasi muda untuk mengembangkan inovasi dan kreativitas guna membentuk kelompok yang memiliki potensi luar biasa, 
-          yang mampu mewujudkan masa depan yang berkelanjutan. Melalui pendekatan ini, diharapkan generasi ini akan berperan dalam menciptakan solusi-solusi baru untuk tantangan masa kini dan mendatang, 
-          baik dalam hal teknologi, lingkungan, pendidikan, maupun tanggung jawab sosial.
+        <p className="max-w-4xl mx-auto text-gray-700 leading-relaxed text-lg">
+          Kompetisi atau perlombaan yang ada dalam kegiatan{" "}
+          <strong>INVOFEST (Infomatics Vocational Festival) 2025</strong> adalah
+          diantaranya National Poster Design Competition, UI UX Design Competition, dan
+          juga UI/UX Design Competition. Kompetisi dalam INVOFEST ini mengusung tema{" "}
+          <strong>"From Creation to Innovation"</strong>Tema ini bertujuan mengajak
+          generasi muda untuk mengembangkan inovasi dan kreativitas guna membentuk
+          kelompok yang memiliki potensi luar biasa, yang mampu mewujudkan masa depan
+          yang berkelanjutan. Melalui pendekatan ini, diharapkan generasi ini akan
+          berperan dalam menciptakan solusi-solusi baru untuk tantangan masa kini dan
+          mendatang, baik dalam hal teknologi, lingkungan, pendidikan, maupun tanggung
+          jawab sosial.
         </p>
       </section>
 
-      {/* 🔥 TITLE */}
-      <section className="text-center py-14">
-        <h2 className="text-2xl md:text-3xl font-bold text-red-900">
+      {/* Competition List Section */}
+      <section className="py-16 px-8 max-w-6xl mx-auto text-center">
+        <h2 className="text-4xl font-bold text-[#7B1D3F] mb-2 tracking-wide">
           DAFTAR KOMPETISI
         </h2>
-        <p className="text-gray-500 mt-2">
-          Berikut adalah daftar kompetisi yang ada pada event INVOFEST.
+        <p className="text-gray-500 mb-10">
+          Berikut Adalah Daftar Kompetisi Yang Ada Pada Event INVOFEST.
         </p>
-      </section>
 
-      {/* 🔥 CARD */}
-      <section className="max-w-6xl mx-auto px-6 pb-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {competitions.map((item, index) => (
-          <div
-            key={index}
-            className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300"
-          >
-            <img
-              src={item.image}
-              alt={item.title}
-              className="max-w-sm mx-auto rounded-xl overflow-hidden shadow-lg"
-            />
-
-            <div className="p-5">
-              <h3 className="text-lg font-semibold text-red-900 mb-2">
-                {item.title}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Poster Design */}
+          <div className="rounded-xl overflow-hidden shadow-md border border-gray-100">
+            <div className="h-52 overflow-hidden">
+              <img
+                src="https://www.invofest-harkatnegeri.com/assets/competition-card/software_dev.png"
+                alt="Poster Design"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="p-5 text-left">
+              <h3 className="text-lg font-bold text-gray-800 mb-2">
+                Poster Design Competition
               </h3>
-
-              <p className="text-sm text-gray-600 mb-4">
-                {item.desc}
+              <p className="text-gray-500 text-sm leading-relaxed mb-4">
+                Poster Design Competition ini adalah kompetisi untuk menciptakan suatu
+                karya dalam bentuk poster digital yang komunikatif dan inspiratif, guna
+                menyuarakan gagasan atau solusi visual terhadap permasalahan yang ada
+                sekarang ini.
               </p>
-
-              <Button label="INFO SELENGKAPNYA" variant="primary" />
+              <button className="bg-[#7B1D3F] text-white text-xs font-bold px-5 py-2 rounded hover:bg-[#5a1530] transition-colors duration-200">
+                INFO SELENGKAPNYA
+              </button>
             </div>
           </div>
-        ))}
-      </section>
 
-      {/* 🔥 FAQ */}
-      <section className="max-w-4xl mx-auto px-6 pb-20 text-left">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-red-900 mb-6">
-          Pertanyaan Umum
-        </h2>
+          {/* UI UX Design */}
+          <div className="rounded-xl overflow-hidden shadow-md border border-gray-100">
+            <div className="h-52 overflow-hidden">
+              <img
+                src="https://www.invofest-harkatnegeri.com/assets/competition-card/ui_ux.png"
+                alt="UI UX Design"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="p-5 text-left">
+              <h3 className="text-lg font-bold text-gray-800 mb-2">
+                UI/UX Design Competition
+              </h3>
+              <p className="text-gray-500 text-sm leading-relaxed mb-4">
+                UI/UX Design Competition ini adalah kompetisi untuk menciptakan dan
+                merancang inovasi sebuah produk digital yang dapat berupa website maupun
+                mobile apps serta dapat membuat nyaman calon pengguna.
+              </p>
+              <button className="bg-[#7B1D3F] text-white text-xs font-bold px-5 py-2 rounded hover:bg-[#5a1530] transition-colors duration-200">
+                INFO SELENGKAPNYA
+              </button>
+            </div>
+          </div>
 
-        <div className="flex flex-col gap-3">
-          {collapseItems.map((item, index) => (
-            <Collapse
-              key={index}
-              title={item.title}
-              description={item.description}
-            />
-          ))}
+          {/* Web Design */}
+          <div className="rounded-xl overflow-hidden shadow-md border border-gray-100">
+            <div className="h-52 overflow-hidden">
+              <img
+                src="https://www.invofest-harkatnegeri.com/assets/competition-card/web_design.png"
+                alt="Web Design"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="p-5 text-left">
+              <h3 className="text-lg font-bold text-gray-800 mb-2">
+                Web Design Competition
+              </h3>
+              <p className="text-gray-500 text-sm leading-relaxed mb-4">
+                Web Design Competition ini adalah kompetisi untuk menciptakan suatu
+                perangkat lunak berbasis website yang menggunakan desain menarik, unik,
+                dan responsive pada semua device serta sesuai dengan tema kompetisi.
+              </p>
+              <button className="bg-[#7B1D3F] text-white text-xs font-bold px-5 py-2 rounded hover:bg-[#5a1530] transition-colors duration-200">
+                INFO SELENGKAPNYA
+              </button>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="py-10 text-center text-gray-600 text-sm">
-        &copy; 2026 Invofest. All rights reserved.
-      </footer>
+      {/* FAQ Section */}
+      <section className="py-16 px-8 max-w-5xl mx-auto text-center">
+        <h2 className="text-3xl font-bold text-gray-800 mb-1">
+          Punya Pertanyaan? Lihat
+        </h2>
+        <h2 className="text-3xl font-bold text-[#7B1D3F] mb-3">Disini</h2>
+        <p className="text-gray-500 mb-10 text-sm">
+          Ada banyak informasi yang terkait dengan INVOFEST, Anda dapat melihat
+          <br />
+          daftar pertanyaan di bawah ini.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {faqs.map((faq, i) => (
+            <details
+              key={i}
+              className="border-2 border-[#7B1D3F] rounded-lg px-5 py-4 text-left group cursor-pointer"
+            >
+              <summary className="flex items-center gap-3 text-gray-700 font-medium text-sm list-none">
+                <span className="text-[#7B1D3F] text-lg font-bold transition-transform group-open:rotate-180">
+                  ⌄
+                </span>
+                {faq.title}
+              </summary>
+              <p className="mt-3 text-gray-500 text-sm leading-relaxed">
+                {faq.description}
+              </p>
+            </details>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
