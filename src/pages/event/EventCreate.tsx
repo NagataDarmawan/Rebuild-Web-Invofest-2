@@ -1,31 +1,33 @@
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, type SubmitHandler } from "react-hook-form"; 
 import Button from "../../component/UI/Button";
 import Input from "../../component/UI/Input";
 
-
-type FormData = {
-  name: string;
-  tanggal: Date;
-  lokasi: string;
-};
-
+// 1. Definisikan schema
 const schema = z.object({
   name: z.string().min(3, "Nama kategori minimal 3 karakter"),
-  tanggal: z.coerce.date({message: "Tanggal event harus berupa tanggal yang valid"}),
+  tanggal: z.preprocess((arg) => {
+    if (typeof arg === "string" || arg instanceof Date) return new Date(arg);
+    return arg;
+  }, z.date({ message: "Tanggal event harus berupa tanggal yang valid" })),
   lokasi: z.string().min(3, "Lokasi event minimal 3 karakter"),
 });
 
+// 2. Gunakan tipe data otomatis dari schema
+type IFormInput = z.infer<typeof schema>;
 
 export default function CategoryCreate() {
   const {
     register,
     handleSubmit,
-    formState: {errors},
-  } = useForm<FormData>({resolver: zodResolver(schema),});
+    formState: { errors },
+  } = useForm<IFormInput>({ 
+    // Menggunakan 'as any' untuk menghindari konflik tipe internal library
+    resolver: zodResolver(schema) as any, 
+  });
 
-  const onsubmit = (data: FormData) => {
+  const onsubmit: SubmitHandler<IFormInput> = (data) => {
     console.log(data);
   };
 
@@ -42,7 +44,7 @@ export default function CategoryCreate() {
           error={errors.name?.message}
         />
 
-          <Input
+        <Input
           label="Tanggal Event"
           name="tanggal"
           type="date"
@@ -50,13 +52,14 @@ export default function CategoryCreate() {
           error={errors.tanggal?.message}
         />
 
-          <Input
+        <Input
           label="Lokasi Event"
           name="lokasi"
           register={register}
           error={errors.lokasi?.message}
         />
 
+        {/* Gunakan Button tanpa props 'type' karena sudah otomatis submit di dalam form */}
         <Button label="Simpan" variant="primary" />
       </form>
     </div>
