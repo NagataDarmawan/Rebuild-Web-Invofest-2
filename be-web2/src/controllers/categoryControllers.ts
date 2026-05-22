@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 
+// Inisialisasi Prisma Client di luar fungsi agar reuseable
 const prisma = new PrismaClient();
 
 // 1. Menampilkan semua kategori
@@ -15,7 +16,7 @@ export const getAllCategories = async (req: Request, res: Response) => {
     }
 };
 
-// 2. Menyimpan data kategori baru (Ditambahkan handling unique constraint P2002)
+// 2. Menyimpan data kategori baru
 export const createCategory = async (req: Request, res: Response) => {
     try {
         const { name } = req.body;
@@ -38,6 +39,8 @@ export const createCategory = async (req: Request, res: Response) => {
 export const getCategoryById = async (req: Request, res: Response) => {
     try {
         const id = Number(req.params.id);
+        if (isNaN(id)) return res.status(400).json({ message: "ID harus berupa angka" });
+
         const category = await prisma.category.findUnique({ where: { id } });
         
         if (!category) return res.status(404).json({ message: "Kategori tidak ditemukan" });
@@ -47,12 +50,13 @@ export const getCategoryById = async (req: Request, res: Response) => {
     }
 };
 
-// 4. Mengupdate data kategori (Ditambahkan handling unique constraint P2002)
+// 4. Mengupdate data kategori
 export const updateCategoryById = async (req: Request, res: Response) => {
     try {
         const id = Number(req.params.id);
         const { name } = req.body;
         
+        if (isNaN(id)) return res.status(400).json({ message: "ID harus berupa angka" });
         if (!name) return res.status(400).json({ message: "Nama kategori wajib diisi" });
 
         const updated = await prisma.category.update({
@@ -61,11 +65,9 @@ export const updateCategoryById = async (req: Request, res: Response) => {
         });
         res.json({ message: "Kategori berhasil diperbarui", data: updated });
     } catch (error: any) {
-        // P2002 = Mengubah nama ke nama yang sudah dipakai kategori lain
         if (error.code === 'P2002') {
             return res.status(400).json({ message: "Nama kategori sudah digunakan oleh kategori lain!" });
         }
-        // P2025 = Not Found
         if (error.code === 'P2025') {
             return res.status(404).json({ message: "Kategori tidak ditemukan untuk diupdate" });
         }
@@ -77,17 +79,16 @@ export const updateCategoryById = async (req: Request, res: Response) => {
 export const deleteCategoryById = async (req: Request, res: Response) => {
     try {
         const id = Number(req.params.id);
+        if (isNaN(id)) return res.status(400).json({ message: "ID harus berupa angka" });
         
         await prisma.category.delete({ where: { id } });
         res.json({ message: "Kategori berhasil dihapus" });
     } catch (error: any) {
-        // P2003 = Foreign Key Constraint (Kategori masih dipakai oleh Event)
         if (error.code === 'P2003') {
             return res.status(400).json({ 
-                message: "Harus hapus event yang menggunakan kategori ini dulu baru bisa hapus kategori!" 
+                message: "Kategori tidak bisa dihapus karena masih digunakan oleh data lain (Event)!" 
             });
         }
-        // P2025 = Not Found
         if (error.code === 'P2025') {
             return res.status(404).json({ message: "Kategori tidak ditemukan" });
         }

@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+
 const prisma = new PrismaClient();
 
 // 1. Menampilkan semua pembicara (Ikut menampilkan daftar event yang mereka isi)
@@ -17,7 +18,7 @@ export const getAllPembicara = async (req: Request, res: Response) => {
     }
 };
 
-// 2. Menyimpan data pembicara baru (Tidak memerlukan eventId lagi)
+// 2. Menyimpan data pembicara baru
 export const createPembicara = async (req: Request, res: Response) => {
     try {
         const { name, topik } = req.body;
@@ -43,6 +44,8 @@ export const createPembicara = async (req: Request, res: Response) => {
 export const getPembicaraById = async (req: Request, res: Response) => {
     try {
         const id = Number(req.params.id);
+        if (isNaN(id)) return res.status(400).json({ message: "ID harus berupa angka" });
+
         const data = await prisma.pembicara.findUnique({ 
             where: { id },
             include: { events: true } // Mengambil daftar event terkait pembicara ini
@@ -56,10 +59,12 @@ export const getPembicaraById = async (req: Request, res: Response) => {
     }
 };
 
-// 4. Mengupdate data pembicara (Hanya mengupdate info profil pembicara)
+// 4. Mengupdate data pembicara
 export const updatePembicaraById = async (req: Request, res: Response) => {
     try {
         const id = Number(req.params.id);
+        if (isNaN(id)) return res.status(400).json({ message: "ID harus berupa angka" });
+
         const { name, topik } = req.body;
 
         if (!name || !topik) {
@@ -82,10 +87,11 @@ export const updatePembicaraById = async (req: Request, res: Response) => {
     }
 };
 
-// 5. Menghapus pembicara (Ditambahkan proteksi foreign key constraint P2003)
+// 5. Menghapus pembicara
 export const deletePembicaraById = async (req: Request, res: Response) => {
     try {
         const id = Number(req.params.id);
+        if (isNaN(id)) return res.status(400).json({ message: "ID harus berupa angka" });
         
         await prisma.pembicara.delete({ where: { id } });
         res.json({ message: "Pembicara berhasil dihapus" });

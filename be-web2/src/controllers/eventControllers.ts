@@ -49,6 +49,8 @@ export const createEvent = async (req: Request, res: Response) => {
 export const getEventById = async (req: Request, res: Response) => {
     try {
         const id = Number(req.params.id);
+        if (isNaN(id)) return res.status(400).json({ message: "ID harus berupa angka" });
+
         const event = await prisma.event.findUnique({ 
             where: { id },
             include: {
@@ -71,6 +73,8 @@ export const getEventById = async (req: Request, res: Response) => {
 export const updateEventById = async (req: Request, res: Response) => {
     try {
         const id = Number(req.params.id);
+        if (isNaN(id)) return res.status(400).json({ message: "ID harus berupa angka" });
+
         const { name, dateEvent, location, categoryId, pembicaraId, description } = req.body;
 
         const updatedEvent = await prisma.event.update({
@@ -80,7 +84,7 @@ export const updateEventById = async (req: Request, res: Response) => {
                 location,
                 description,
                 categoryId: categoryId ? Number(categoryId) : undefined,
-                pembicaraId: pembicaraId ? Number(pembicaraId) : undefined, // Memperbarui pembicara jika ada perubahan
+                pembicaraId: pembicaraId ? Number(pembicaraId) : undefined, 
                 dateEvent: dateEvent ? new Date(dateEvent) : undefined,
             }
         });
@@ -96,6 +100,7 @@ export const updateEventById = async (req: Request, res: Response) => {
 export const deleteEventById = async (req: Request, res: Response) => {
     try {
         const id = Number(req.params.id);
+        if (isNaN(id)) return res.status(400).json({ message: "ID harus berupa angka" });
 
         await prisma.event.delete({
             where: { id }
