@@ -69,7 +69,7 @@ export const getEventById = async (req: Request, res: Response) => {
     }
 };
 
-// 4. Mengupdate data event berdasarkan ID
+// 4. Mengupdate data event berdasarkan ID (Disesuaikan dengan exactOptionalPropertyTypes)
 export const updateEventById = async (req: Request, res: Response) => {
     try {
         const id = Number(req.params.id);
@@ -77,16 +77,21 @@ export const updateEventById = async (req: Request, res: Response) => {
 
         const { name, dateEvent, location, categoryId, pembicaraId, description } = req.body;
 
+        // Membuat objek data secara dinamis hanya dengan properti wajib
+        const updateData: any = {
+            name,
+            location,
+            description
+        };
+
+        // Kondisi pengecekan ketat agar properti bernilai undefined tidak ikut dimasukkan ke dalam objek
+        if (categoryId !== undefined) updateData.categoryId = Number(categoryId);
+        if (pembicaraId !== undefined) updateData.pembicaraId = Number(pembicaraId);
+        if (dateEvent !== undefined) updateData.dateEvent = new Date(dateEvent);
+
         const updatedEvent = await prisma.event.update({
             where: { id },
-            data: {
-                name,
-                location,
-                description,
-                categoryId: categoryId ? Number(categoryId) : undefined,
-                pembicaraId: pembicaraId ? Number(pembicaraId) : undefined, 
-                dateEvent: dateEvent ? new Date(dateEvent) : undefined,
-            }
+            data: updateData
         });
 
         res.json({ message: "Event berhasil diperbarui", data: updatedEvent });

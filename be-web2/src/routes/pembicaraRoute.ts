@@ -6,7 +6,7 @@ import {
     getPembicaraById,
     updatePembicaraById,
     deletePembicaraById
-} from "../controllers/pembicaraControllers";
+} from "../controllers/pembicaraControllers.js";
 
 const router = express.Router();
 router.get("/", getAllPembicara);
