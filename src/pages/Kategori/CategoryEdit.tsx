@@ -28,9 +28,9 @@ export default function CategoryEdit() {
     resolver: zodResolver(schema),
   });
 
-  // 1. Ambil data kategori lama untuk ditampilkan di form
+  // 1. Ambil data kategori lama untuk ditampilkan di form (MENGGUNAKAN URL BACKEND VERCEL)
   useEffect(() => {
-    fetch(`http://localhost:3000/categories/${id}`)
+    fetch(`https://be-web2.vercel.app/categories/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("Gagal memuat kategori");
         return res.json();
@@ -45,12 +45,12 @@ export default function CategoryEdit() {
       });
   }, [id, setValue, navigate]);
 
-  // 2. Fungsi Update ke Backend
+  // 2. Fungsi Update ke Backend (MENGGUNAKAN URL BACKEND VERCEL)
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsLoading(true);
     setFeedback(null);
     try {
-      const response = await fetch(`http://localhost:3000/categories/${id}`, {
+      const response = await fetch(`https://be-web2.vercel.app/categories/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

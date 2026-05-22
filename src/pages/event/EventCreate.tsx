@@ -31,11 +31,11 @@ export default function EventCreate() {
   useEffect(() => {
     const fetchDropdownData = async () => {
       try {
-        const resCat = await fetch("http://localhost:3000/categories");
+        const resCat = await fetch("https://be-web2.vercel.app/categories");
         const dataCat = await resCat.json();
         setCategories(dataCat);
 
-        const resSpeaker = await fetch("http://localhost:3000/pembicara");
+        const resSpeaker = await fetch("https://be-web2.vercel.app/pembicara");
         const dataSpeaker = await resSpeaker.json();
         setSpeakers(dataSpeaker);
       } catch (err) {
@@ -51,9 +51,11 @@ export default function EventCreate() {
     setIsLoading(true);
 
     try {
-      const fullDateTimeString = `${formData.dateEvent}T07:00:00.000Z`;
+      // Pastikan format tanggal bersih dari karakter tak terlihat sebelum ditambah string ISO waktu
+      const cleanDate = formData.dateEvent.trim();
+      const fullDateTimeString = `${cleanDate}T07:00:00.000Z`;
 
-      const response = await fetch("http://localhost:3000/events", {
+      const response = await fetch("https://be-web2.vercel.app/events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

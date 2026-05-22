@@ -25,7 +25,7 @@ export default function EventIndex() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/events");
+      const response = await fetch("https://be-web2.vercel.app/events");
       const data = await response.json();
       setEvents(data);
     } catch (error) {
@@ -39,7 +39,7 @@ export default function EventIndex() {
   const handleDelete = async (id: number) => {
     if (confirm("Apakah Anda yakin ingin menghapus event ini?")) {
       try {
-        const response = await fetch(`http://localhost:3000/events/${id}`, {
+        const response = await fetch(`https://be-web2.vercel.app/events/${id}`, {
           method: "DELETE",
         });
 
@@ -114,7 +114,7 @@ export default function EventIndex() {
                   <td className="py-4">
                     <div className="flex flex-col">
                       <span className="font-medium text-gray-900">{e.pembicara?.name || "Tanpa Pembicara"}</span>
-                      <span className="text-xs text-gray-400">{e.pembicara?.topik}</span>
+                      <span className="text-xs text-gray-400">{e.pembicara?.topik || ""}</span>
                     </div>
                   </td>
 

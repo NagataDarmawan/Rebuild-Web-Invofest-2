@@ -16,9 +16,10 @@ export default function PembicaraIndex() {
   const [pembicara, setPembicara] = useState<PembicaraData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // 1. Fungsi Fetch Data Pembicara (MENGGUNAKAN URL BACKEND VERCEL)
   const fetchData = async () => {
     try {
-      const res = await fetch("http://localhost:3000/pembicara");
+      const res = await fetch("https://be-web2.vercel.app/pembicara");
       const data = await res.json();
       setPembicara(data);
     } catch (err) {
@@ -32,12 +33,12 @@ export default function PembicaraIndex() {
     fetchData();
   }, []);
 
-  // Fungsi Hapus dengan penanganan catching error P2003 (Foreign Key Constraint)
+  // 2. Fungsi Hapus dengan penanganan catching error P2003 (MENGGUNAKAN URL BACKEND VERCEL)
   const handleDelete = async (id: number) => {
     if (!confirm("Apakah Anda yakin ingin menghapus pembicara ini?")) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/pembicara/${id}`, {
+      const res = await fetch(`https://be-web2.vercel.app/pembicara/${id}`, {
         method: "DELETE",
       });
       

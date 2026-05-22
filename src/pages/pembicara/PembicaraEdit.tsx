@@ -25,9 +25,9 @@ export default function PembicaraEdit() {
     resolver: zodResolver(schema),
   });
 
-  // 1. Load data lama pembicara berdasarkan ID
+  // 1. Load data lama pembicara berdasarkan ID (MENGGUNAKAN URL BACKEND VERCEL)
   useEffect(() => {
-    fetch(`http://localhost:3000/pembicara/${id}`)
+    fetch(`https://be-web2.vercel.app/pembicara/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("Gagal mengambil data pembicara");
         return res.json();
@@ -44,12 +44,12 @@ export default function PembicaraEdit() {
       });
   }, [id, setValue, navigate]);
 
-  // 2. Submit Update Data ke Backend
+  // 2. Submit Update Data ke Backend (MENGGUNAKAN URL BACKEND VERCEL)
   const onsubmit: SubmitHandler<FormData> = async (data) => {
     setIsLoading(true);
     setFeedback(null);
     try {
-      const response = await fetch(`http://localhost:3000/pembicara/${id}`, {
+      const response = await fetch(`https://be-web2.vercel.app/pembicara/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data), // Hanya mengirim nama dan topik yang diubah

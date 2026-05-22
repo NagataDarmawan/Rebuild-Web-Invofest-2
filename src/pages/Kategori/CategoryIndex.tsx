@@ -10,10 +10,10 @@ export default function CategoryIndex() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 1. Fungsi Fetch Data Kategori
+  // 1. Fungsi Fetch Data Kategori (MENGGUNAKAN URL BACKEND VERCEL)
   const fetchCategories = async () => {
     try {
-      const res = await fetch("http://localhost:3000/categories");
+      const res = await fetch("https://be-web2.vercel.app/categories");
       const data = await res.json();
       setCategories(data);
     } catch (err) {
@@ -27,12 +27,12 @@ export default function CategoryIndex() {
     fetchCategories();
   }, []);
 
-  // 2. Fungsi Hapus Kategori dengan Catching Error P2003 Dinamis
+  // 2. Fungsi Hapus Kategori dengan Catching Error P2003 Dinamis (MENGGUNAKAN URL BACKEND VERCEL)
   const handleDelete = async (id: number) => {
     if (!confirm("Apakah Anda yakin ingin menghapus kategori ini?")) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/categories/${id}`, {
+      const res = await fetch(`https://be-web2.vercel.app/categories/${id}`, {
         method: "DELETE",
       });
       

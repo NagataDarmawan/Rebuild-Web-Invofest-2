@@ -36,17 +36,17 @@ export default function EventEdit() {
     const loadAllData = async () => {
       try {
         // Fetch daftar kategori untuk dropdown
-        const resCat = await fetch("http://localhost:3000/categories");
+        const resCat = await fetch("https://be-web2.vercel.app/categories");
         const dataCat = await resCat.json();
         setCategories(dataCat);
 
         // Fetch daftar pembicara untuk dropdown
-        const resSpeaker = await fetch("http://localhost:3000/pembicara");
+        const resSpeaker = await fetch("https://be-web2.vercel.app/pembicara");
         const dataSpeaker = await resSpeaker.json();
         setSpeakers(dataSpeaker);
 
         // Fetch detail data event yang mau diedit
-        const resEvent = await fetch(`http://localhost:3000/events/${id}`);
+        const resEvent = await fetch(`https://be-web2.vercel.app/events/${id}`);
         const dataEvent = await resEvent.json();
 
         // Format tanggal ISO dari backend agar pas dibaca oleh type="date" (YYYY-MM-DD)
@@ -80,10 +80,11 @@ export default function EventEdit() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Satukan kembali string tanggal pilihan dengan waktu default (misal 07:00 pagi)
-      const fullDateTimeString = `${formData.dateEvent}T07:00:00.000Z`;
+      // Membersihkan string tanggal dari whitespace tidak terlihat sebelum disatukan
+      const cleanDate = formData.dateEvent.trim();
+      const fullDateTimeString = `${cleanDate}T07:00:00.000Z`;
 
-      const response = await fetch(`http://localhost:3000/events/${id}`, {
+      const response = await fetch(`https://be-web2.vercel.app/events/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -181,7 +182,7 @@ export default function EventEdit() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Event</label>
             <input 
-              type="date" // Diubah dari datetime-local menjadi date murni
+              type="date" 
               className="border p-2.5 w-full rounded-xl text-sm"
               value={formData.dateEvent || ""} 
               onChange={(e) => setFormData({...formData, dateEvent: e.target.value})}
