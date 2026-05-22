@@ -1,67 +1,96 @@
-import {request, response} from 'express';
-import { Category } from '../types/category';
+import { Request, Response } from 'express';
+import { PrismaClient } from '@prisma/client';
 
-let categories: Category[] = [];
+const prisma = new PrismaClient();
 
 // 1. Menampilkan semua kategori
-export const getAllCategories = (req: request, res: response) => {
-    res.json(categories);
+export const getAllCategories = async (req: Request, res: Response) => {
+    try {
+        const categories = await prisma.category.findMany({
+            orderBy: { id: "asc" } // Diurutkan berdasarkan ID agar rapi di tabel frontend
+        });
+        res.json(categories);
+    } catch (error: any) {
+        res.status(500).json({ message: "Gagal mengambil data kategori", error: error.message });
+    }
 };
 
-// 2. Menyimpan data kategori baru
-export const createCategory = (req: request, res: response) => {
+// 2. Menyimpan data kategori baru (Ditambahkan handling unique constraint P2002)
+export const createCategory = async (req: Request, res: Response) => {
     try {
         const { name } = req.body;
+        if (!name) return res.status(400).json({ message: "Nama kategori wajib diisi" });
 
-        // Validasi jika nama kategori belum diisi
-        if (!name) {
-            return res.status(400).json({ message: "Name harus diisi" });
-        }
-
-        // Jika data sudah valid, buat kategori baru
-        const newCategory: Category = {
-            id: categories.length + 1, // Generate ID sederhana
-            name
-        };
-        // Simpan kategori baru ke array
-        categories.push(newCategory);
-        // Kirim response dengan kategori baru yang telah dibuat
+        const newCategory = await prisma.category.create({
+            data: { name }
+        });
         res.status(201).json(newCategory);
-    } catch (error) {
-        res.status(500).json({ message: "Terjadi kesalahan saat membuat kategori", error });
+    } catch (error: any) {
+        // P2002 = Unique constraint failed (Nama kategori duplikat)
+        if (error.code === 'P2002') {
+            return res.status(400).json({ message: "Nama kategori sudah ada, gunakan nama lain!" });
+        }
+        res.status(500).json({ message: "Gagal membuat kategori", error: error.message });
     }
 };
 
-// 3. Menampilkan data kategori berdasarkan id
-export const getCategoryById = (req: request, res: response) => {
-    const id = Number(req.params.id);
-    const category = categories.find((e) => e.id === id);
-    if (!category) {
-        return res.status(404).json({ message: "Kategori tidak ditemukan" });
+// 3. Menampilkan kategori berdasarkan id
+export const getCategoryById = async (req: Request, res: Response) => {
+    try {
+        const id = Number(req.params.id);
+        const category = await prisma.category.findUnique({ where: { id } });
+        
+        if (!category) return res.status(404).json({ message: "Kategori tidak ditemukan" });
+        res.json(category);
+    } catch (error: any) {
+        res.status(500).json({ message: "Gagal mengambil data", error: error.message });
     }
-    res.json(category);
 };
 
-// 4. Mengupdate data kategori berdasarkan id
-export const updateCategoryById = (req: request, res: response) => {
-    const id = Number(req.params.id);
-    const category = categories.find((e) => e.id === id);
-    if (!category) {
-        return res.status(404).json({ message: "Kategori tidak ditemukan" });
+// 4. Mengupdate data kategori (Ditambahkan handling unique constraint P2002)
+export const updateCategoryById = async (req: Request, res: Response) => {
+    try {
+        const id = Number(req.params.id);
+        const { name } = req.body;
+        
+        if (!name) return res.status(400).json({ message: "Nama kategori wajib diisi" });
+
+        const updated = await prisma.category.update({
+            where: { id },
+            data: { name }
+        });
+        res.json({ message: "Kategori berhasil diperbarui", data: updated });
+    } catch (error: any) {
+        // P2002 = Mengubah nama ke nama yang sudah dipakai kategori lain
+        if (error.code === 'P2002') {
+            return res.status(400).json({ message: "Nama kategori sudah digunakan oleh kategori lain!" });
+        }
+        // P2025 = Not Found
+        if (error.code === 'P2025') {
+            return res.status(404).json({ message: "Kategori tidak ditemukan untuk diupdate" });
+        }
+        res.status(500).json({ message: "Gagal update kategori", error: error.message });
     }
-    category.name = req.body.name?? category.name;
-    
-    res.json(category);
 };
 
-// 5. Menghapus data kategori berdasarkan id
-export const deleteCategoryById = (req: request, res: response) => {
-    const id = Number(req.params.id);
-
-    const category = categories.find((e) => e.id === id);
-    if (!category) {
-        return res.status(404).json({ message: "Kategori tidak ditemukan" });
+// 5. Menghapus data kategori
+export const deleteCategoryById = async (req: Request, res: Response) => {
+    try {
+        const id = Number(req.params.id);
+        
+        await prisma.category.delete({ where: { id } });
+        res.json({ message: "Kategori berhasil dihapus" });
+    } catch (error: any) {
+        // P2003 = Foreign Key Constraint (Kategori masih dipakai oleh Event)
+        if (error.code === 'P2003') {
+            return res.status(400).json({ 
+                message: "Harus hapus event yang menggunakan kategori ini dulu baru bisa hapus kategori!" 
+            });
+        }
+        // P2025 = Not Found
+        if (error.code === 'P2025') {
+            return res.status(404).json({ message: "Kategori tidak ditemukan" });
+        }
+        res.status(500).json({ message: "Gagal menghapus kategori", error: error.message });
     }
-    categories = categories.filter((e) => e.id !== id);
-    res.json({ message: "Kategori berhasil dihapus" });
 };

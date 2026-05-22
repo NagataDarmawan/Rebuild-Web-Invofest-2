@@ -1,66 +1,206 @@
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, type SubmitHandler } from "react-hook-form"; 
-import Button from "../../component/UI/Button";
-import Input from "../../component/UI/Input";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-// 1. Definisikan schema
-const schema = z.object({
-  name: z.string().min(3, "Nama kategori minimal 3 karakter"),
-  tanggal: z.preprocess((arg) => {
-    if (typeof arg === "string" || arg instanceof Date) return new Date(arg);
-    return arg;
-  }, z.date({ message: "Tanggal event harus berupa tanggal yang valid" })),
-  lokasi: z.string().min(3, "Lokasi event minimal 3 karakter"),
-});
+interface Category {
+  id: number;
+  name: string;
+}
 
-// 2. Gunakan tipe data otomatis dari schema
-type IFormInput = z.infer<typeof schema>;
+interface Speaker {
+  id: number;
+  name: string;
+  topik: string;
+}
 
-export default function CategoryCreate() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<IFormInput>({ 
-    // Menggunakan 'as any' untuk menghindari konflik tipe internal library
-    resolver: zodResolver(schema) as any, 
+export default function EventCreate() {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [speakers, setSpeakers] = useState<Speaker[]>([]);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    location: "",
+    dateEvent: "", 
+    description: "",
+    categoryId: "",
+    pembicaraId: ""
   });
 
-  const onsubmit: SubmitHandler<IFormInput> = (data) => {
-    console.log(data);
+  useEffect(() => {
+    const fetchDropdownData = async () => {
+      try {
+        const resCat = await fetch("http://localhost:3000/categories");
+        const dataCat = await resCat.json();
+        setCategories(dataCat);
+
+        const resSpeaker = await fetch("http://localhost:3000/pembicara");
+        const dataSpeaker = await resSpeaker.json();
+        setSpeakers(dataSpeaker);
+      } catch (err) {
+        console.error("Gagal memuat data dropdown:", err);
+      }
+    };
+
+    fetchDropdownData();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const fullDateTimeString = `${formData.dateEvent}T07:00:00.000Z`;
+
+      const response = await fetch("http://localhost:3000/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          location: formData.location,
+          description: formData.description,
+          dateEvent: new Date(fullDateTimeString).toISOString(),
+          categoryId: Number(formData.categoryId), 
+          pembicaraId: Number(formData.pembicaraId) 
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Event berhasil dibuat!");
+        navigate("/dashboard/event");
+      } else {
+        alert(result.message || "Gagal membuat event");
+      }
+    } catch (error) {
+      console.error("Error submit event:", error);
+      alert("Gagal terhubung ke server. Pastikan server backend sudah dinyalakan!");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Tambah Kategori Event</h1>
-      <p>Form untuk menambahkan kategori event baru.</p>
+    // Ukuran kontainer diperkecil menjadi max-w-2xl agar pas di tengah layar
+    <div className="p-6 max-w-2xl mx-auto font-sans">
+      
+      {/* Box Utama Form dengan padding (p-8) yang lebih proporsional */}
+      <form onSubmit={handleSubmit} className="bg-white border border-gray-200 shadow-sm p-8 rounded-3xl space-y-4">
+        
+        {/* Teks Judul dan Sub-deskripsi */}
+        <div className="mb-4">
+          <h1 className="text-2xl font-bold text-[#1a0a10]">Tambah Event Baru</h1>
+          <p className="text-xs text-gray-400 mt-0.5">Buat jadwal event baru berdasarkan tanggal, kategori, dan pembicara</p>
+        </div>
 
-      <form onSubmit={handleSubmit(onsubmit)}>
-        <Input
-          label="Nama Kategori"
-          name="name"
-          register={register}
-          error={errors.name?.message}
-        />
+        {/* Nama Event */}
+        <div>
+          <label className="block text-xs font-semibold text-[#1a0a10] mb-1.5">Nama Event</label>
+          <input 
+            type="text"
+            className="border border-gray-300 p-2.5 w-full rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:border-[#7B1D3F]"
+            placeholder="Masukkan nama event..."
+            value={formData.name} 
+            onChange={(e) => setFormData({...formData, name: e.target.value})}
+            required
+          />
+        </div>
 
-        <Input
-          label="Tanggal Event"
-          name="tanggal"
-          type="date"
-          register={register}
-          error={errors.tanggal?.message}
-        />
+        {/* Grid Kolom: Kategori & Pembicara */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Dropdown Kategori */}
+          <div>
+            <label className="block text-xs font-semibold text-[#1a0a10] mb-1.5">Kategori Event</label>
+            <select 
+              className="border border-gray-300 p-2.5 w-full rounded-xl text-sm bg-white text-gray-700 focus:outline-none focus:border-[#7B1D3F]"
+              value={formData.categoryId}
+              onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
+              required
+            >
+              <option value="">-- Pilih Kategori --</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
 
-        <Input
-          label="Lokasi Event"
-          name="lokasi"
-          register={register}
-          error={errors.lokasi?.message}
-        />
+          {/* Dropdown Pembicara */}
+          <div>
+            <label className="block text-xs font-semibold text-[#1a0a10] mb-1.5">Pembicara</label>
+            <select 
+              className="border border-gray-300 p-2.5 w-full rounded-xl text-sm bg-white text-gray-700 focus:outline-none focus:border-[#7B1D3F]"
+              value={formData.pembicaraId}
+              onChange={(e) => setFormData({...formData, pembicaraId: e.target.value})}
+              required
+            >
+              <option value="">-- Pilih Pembicara --</option>
+              {speakers.map((spk) => (
+                <option key={spk.id} value={spk.id}>{spk.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
 
-        {/* Gunakan Button tanpa props 'type' karena sudah otomatis submit di dalam form */}
-        <Button label="Simpan" variant="primary" />
+        {/* Grid Kolom: Lokasi & Tanggal */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Lokasi */}
+          <div>
+            <label className="block text-xs font-semibold text-[#1a0a10] mb-1.5">Lokasi</label>
+            <input 
+              type="text"
+              className="border border-gray-300 p-2.5 w-full rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:border-[#7B1D3F]"
+              placeholder="Gedung / Link Online..."
+              value={formData.location} 
+              onChange={(e) => setFormData({...formData, location: e.target.value})}
+              required
+            />
+          </div>
+
+          {/* Tanggal Event */}
+          <div>
+            <label className="block text-xs font-semibold text-[#1a0a10] mb-1.5">Tanggal Event</label>
+            <input 
+              type="date" 
+              className="border border-gray-300 p-2.5 w-full rounded-xl text-sm text-gray-700 focus:outline-none focus:border-[#7B1D3F]"
+              value={formData.dateEvent || ""} 
+              onChange={(e) => setFormData({...formData, dateEvent: e.target.value})}
+              required
+            />
+          </div>
+        </div>
+
+        {/* Deskripsi */}
+        <div>
+          <label className="block text-xs font-semibold text-[#1a0a10] mb-1.5">Deskripsi Event</label>
+          <textarea 
+            rows={4}
+            className="border border-gray-300 p-2.5 w-full rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:border-[#7B1D3F] resize-none"
+            placeholder="Tulis detail deskripsi event di sini..."
+            value={formData.description} 
+            onChange={(e) => setFormData({...formData, description: e.target.value})}
+            required
+          />
+        </div>
+
+        {/* Tombol Aksi Kanan Bawah */}
+        <div className="flex justify-end gap-3 pt-2">
+          <button 
+            type="button"
+            onClick={() => navigate(-1)}
+            className="px-5 py-2 border border-gray-300 text-sm font-semibold rounded-xl text-gray-500 hover:bg-gray-50 transition-all"
+          >
+            Batal
+          </button>
+          <button 
+            type="submit" 
+            disabled={isLoading}
+            className="bg-[#7B1D3F] hover:bg-[#611631] text-white px-5 py-2 rounded-xl text-sm font-semibold shadow-sm transition-all disabled:bg-gray-400"
+          >
+            {isLoading ? "Menyimpan..." : "Buat Event"}
+          </button>
+        </div>
       </form>
     </div>
   );

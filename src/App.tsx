@@ -9,6 +9,10 @@ import Workshop from "./pages/Workshop";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/dashboard/Dashboard";
+import EventEdit from "./pages/event/EventEdit";
+import CategoryEdit from "./pages/Kategori/CategoryEdit";
+import PembicaraEdit from "./pages/pembicara/PembicaraEdit";
+
 
 // dashboard pages
 import CategoryIndex from "./pages/Kategori/CategoryIndex";
@@ -60,15 +64,15 @@ function App() {
             {/* Category */}
             <Route path="/dashboard/category" element={<CategoryIndex />} />
             <Route path="/dashboard/category/create" element={<CategoryCreate />} />
-
+            <Route path="/dashboard/category/edit/:id" element={<CategoryEdit />} />
             {/* Event */}
             <Route path="/dashboard/event" element={<EventIndex />} />
             <Route path="/dashboard/event/create" element={<EventCreate />} />
-
+            <Route path="/dashboard/event/edit/:id" element={<EventEdit />} />
             {/* Pembicara */}
             <Route path="/dashboard/pembicara" element={<PembicaraIndex />} />
             <Route path="/dashboard/pembicara/create" element={<PembicaraCreate />} />
-
+            <Route path="/dashboard/pembicara/edit/:id" element={<PembicaraEdit />} />
           </Route>
         </Route>
 

@@ -1,0 +1,45 @@
+// This is your Prisma schema file
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Tabel Kategori
+model Category {
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+  events Event[] 
+
+  @@map("categories")
+}
+
+// Tabel Event
+model Event {
+  id          Int       @id @default(autoincrement())
+  name        String
+  categoryId  Int       @map("category_id")
+  pembicaraId Int       @map("pembicara_id") // Menyimpan ID Pembicara di tabel Event
+  location    String
+  dateEvent   DateTime  @map("date_event")
+  description String    @db.Text
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  category    Category  @relation(fields: [categoryId], references: [id])
+  pembicara   Pembicara @relation(fields: [pembicaraId], references: [id]) // Relasi ke Pembicara
+
+  @@map("events")
+}
+
+// Tabel Pembicara
+model Pembicara {
+  id     Int     @id @default(autoincrement())
+  name   String
+  topik  String
+  events Event[] // Satu pembicara bisa mengisi banyak event berbeda
+
+  @@map("pembicara")
+}

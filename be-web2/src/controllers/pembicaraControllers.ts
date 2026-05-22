@@ -1,64 +1,105 @@
 import { Request, Response } from 'express';
-import { Pembicara } from '../types/pembicara';
+import { PrismaClient } from '@prisma/client';
 
-let pembicaraList: Pembicara[] = []; // In-memory array to store pembicara
+const prisma = new PrismaClient();
 
-// 1. Menampilkan semua pembicara
-export const getAllPembicara = (req: Request, res: Response) => {
-    res.json(pembicaraList);
+// 1. Menampilkan semua pembicara (Ikut menampilkan daftar event yang mereka isi)
+export const getAllPembicara = async (req: Request, res: Response) => {
+    try {
+        const data = await prisma.pembicara.findMany({
+            include: { 
+                events: true // Menggunakan 'events' (jamak) sesuai skema relasi baru
+            },
+            orderBy: { id: "asc" }
+        });
+        res.json(data);
+    } catch (error: any) {
+        res.status(500).json({ message: "Gagal mengambil data pembicara", error: error.message });
+    }
 };
 
-// 2. Menyimpan data pembicara baru
-export const createPembicara = (req: Request, res: Response) => {
+// 2. Menyimpan data pembicara baru (Tidak memerlukan eventId lagi)
+export const createPembicara = async (req: Request, res: Response) => {
     try {
         const { name, topik } = req.body;
-        // Validasi jika ada data yang belum diisi
+        
         if (!name || !topik) {
-            return res.status(400).json({ message: "Name dan topik harus diisi" });
+            return res.status(400).json({ message: "Nama dan topik wajib diisi" });
         }
-        // Jika data sudah valid, buat pembicara baru
-        const newPembicara: Pembicara = {
-            id: pembicaraList.length + 1, // Generate ID sederhana
-            name,
-            topik
-        };
-        // Simpan pembicara baru ke array
-        pembicaraList.push(newPembicara);
-        // Kirim response dengan pembicara baru yang telah dibuat
+
+        const newPembicara = await prisma.pembicara.create({
+            data: {
+                name,
+                topik
+            }
+        });
+        
         res.status(201).json(newPembicara);
-    } catch (error) {
-        res.status(500).json({ message: "Terjadi kesalahan saat membuat pembicara", error });
+    } catch (error: any) {
+        res.status(500).json({ message: "Gagal membuat pembicara", error: error.message });
     }
 };
 
-// 3. Menampilkan data pembicara berdasarkan id
-export const getPembicaraById = (req: Request, res: Response) => {
-    const id = Number(req.params.id);
-    const pembicara = pembicaraList.find((e) => e.id === id);
-    if (!pembicara) {
-        return res.status(404).json({ message: "Pembicara tidak ditemukan" });
+// 3. Menampilkan pembicara berdasarkan ID
+export const getPembicaraById = async (req: Request, res: Response) => {
+    try {
+        const id = Number(req.params.id);
+        const data = await prisma.pembicara.findUnique({ 
+            where: { id },
+            include: { events: true } // Mengambil daftar event terkait pembicara ini
+        });
+        
+        if (!data) return res.status(404).json({ message: "Data pembicara tidak ditemukan" });
+        
+        res.json(data);
+    } catch (error: any) {
+        res.status(500).json({ message: "Error saat mengambil detail data pembicara", error: error.message });
     }
-    res.json(pembicara);
-};
-// 4. Mengupdate data pembicara berdasarkan id
-export const updatePembicaraById = (req: Request, res: Response) => {
-    const id = Number(req.params.id);
-    const pembicara = pembicaraList.find((e) => e.id === id);
-    if (!pembicara) {
-        return res.status(404).json({ message: "Pembicara tidak ditemukan" });
-    }
-    pembicara.name = req.body.name ?? pembicara.name;
-    pembicara.topik = req.body.topik ?? pembicara.topik;
-    res.json(pembicara);
-};
-// 5. Menghapus data pembicara berdasarkan id
-export const deletePembicaraById = (req: Request, res: Response) => {
-    const id = Number(req.params.id);
-    const pembicara = pembicaraList.find((e) => e.id === id);
-    if (!pembicara) {
-        return res.status(404).json({ message: "Pembicara tidak ditemukan" });
-    }
-    pembicaraList = pembicaraList.filter((e) => e.id !== id);
-    res.json({ message: "Pembicara berhasil dihapus" });
 };
 
+// 4. Mengupdate data pembicara (Hanya mengupdate info profil pembicara)
+export const updatePembicaraById = async (req: Request, res: Response) => {
+    try {
+        const id = Number(req.params.id);
+        const { name, topik } = req.body;
+
+        if (!name || !topik) {
+            return res.status(400).json({ message: "Nama dan topik wajib diisi" });
+        }
+
+        const updated = await prisma.pembicara.update({
+            where: { id },
+            data: { 
+                name, 
+                topik
+            }
+        });
+        res.json({ message: "Data pembicara berhasil diperbarui", data: updated });
+    } catch (error: any) {
+        if (error.code === 'P2025') {
+            return res.status(404).json({ message: "Data pembicara tidak ditemukan untuk diupdate" });
+        }
+        res.status(500).json({ message: "Gagal update data pembicara", error: error.message });
+    }
+};
+
+// 5. Menghapus pembicara (Ditambahkan proteksi foreign key constraint P2003)
+export const deletePembicaraById = async (req: Request, res: Response) => {
+    try {
+        const id = Number(req.params.id);
+        
+        await prisma.pembicara.delete({ where: { id } });
+        res.json({ message: "Pembicara berhasil dihapus" });
+    } catch (error: any) {
+        // P2003 = Pembicara masih dipakai di dalam tabel Event
+        if (error.code === 'P2003') {
+            return res.status(400).json({ 
+                message: "Harus hapus event yang diisi oleh pembicara ini dulu baru bisa hapus pembicara!" 
+            });
+        }
+        if (error.code === 'P2025') {
+            return res.status(404).json({ message: "Data pembicara tidak ditemukan untuk dihapus" });
+        }
+        res.status(500).json({ message: "Gagal menghapus data pembicara", error: error.message });
+    }
+};
