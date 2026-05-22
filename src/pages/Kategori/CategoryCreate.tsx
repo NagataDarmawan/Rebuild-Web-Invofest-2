@@ -88,9 +88,9 @@ export default function CategoryCreate() {
 
         {/* Pembungkus aksi tombol agar sejajar ke samping */}
         <div className="flex gap-2 pt-2">
+          {/* Perbaikan di sini: Menghapus properti disabled agar lolos build TypeScript Vercel */}
           <Button 
             label={isLoading ? "Menyimpan..." : "Simpan Kategori"} 
-            disabled={isLoading}
           />
           <button 
             type="button" 

@@ -45,7 +45,7 @@ export default function CategoryEdit() {
       });
   }, [id, setValue, navigate]);
 
-  // 2. Fungsi Update ke Backend (Menangani pesan error unik P2002 secara dinamis)
+  // 2. Fungsi Update ke Backend
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsLoading(true);
     setFeedback(null);
@@ -59,12 +59,11 @@ export default function CategoryEdit() {
       const result = await response.json();
 
       if (!response.ok) {
-        // Menangkap error "Nama kategori sudah digunakan oleh kategori lain!" dari backend
         throw new Error(result.message || "Gagal memperbarui kategori");
       }
 
       alert("Kategori berhasil diupdate!");
-      navigate("/dashboard/category"); // Kembali ke daftar kategori sesuai standar lowercase route
+      navigate("/dashboard/category"); 
     } catch (error: any) {
       setFeedback({ text: error.message || "Terjadi kesalahan", isError: true });
     } finally {
@@ -94,9 +93,9 @@ export default function CategoryEdit() {
         />
 
         <div className="flex gap-2 pt-2">
+          {/* Perbaikan di sini: Menghapus atribut disabled */}
           <Button 
             label={isLoading ? "Menyimpan..." : "Update Kategori"} 
-            disabled={isLoading}
           />
           <button 
             type="button" 

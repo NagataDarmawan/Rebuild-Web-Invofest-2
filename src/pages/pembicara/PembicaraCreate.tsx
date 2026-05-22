@@ -98,9 +98,9 @@ export default function PembicaraCreate() {
         
         {/* Kontainer Tombol - Flexbox Sejajar */}
         <div className="flex gap-2 pt-2">
+          {/* Perbaikan di sini: Menghapus properti disabled */}
           <Button 
             label={isLoading ? "Menyimpan..." : "Simpan Pembicara"} 
-            disabled={isLoading} 
           />
           <button 
             type="button" 

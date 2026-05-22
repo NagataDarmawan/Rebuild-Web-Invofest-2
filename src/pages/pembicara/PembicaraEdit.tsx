@@ -102,9 +102,9 @@ export default function PembicaraEdit() {
         />
         
         <div className="flex gap-2 pt-2">
+          {/* Perbaikan di sini: Menghapus properti disabled */}
           <Button 
             label={isLoading ? "Menyimpan..." : "Simpan Perubahan"} 
-            disabled={isLoading} 
           />
           <button 
             type="button" 
