@@ -1,17 +1,14 @@
 {
   "name": "be-web2",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "type": "module", 
+  "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx watch --no-cache src/index.ts",
     "build": "prisma generate",
-    "start": "tsx src/index.ts"
+    "start": "node src/index.ts"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.19.3",
     "cors": "^2.8.6",
