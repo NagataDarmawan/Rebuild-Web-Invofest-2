@@ -1,6 +1,5 @@
-import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-
+import type { Request, Response } from "express";
+import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 // 1. Menampilkan semua pembicara (Ikut menampilkan daftar event yang mereka isi)
